@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Navbar from 'react-bootstrap/Navbar';
 import { Container, Nav } from 'react-bootstrap';
@@ -14,14 +14,16 @@ import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import axios from 'axios';
 import { message } from 'antd';
+
 const Register = () => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+
   const [data, setData] = useState({
     name: "",
     email: "",
     password: "",
     type: ""
-  })
+  });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -29,25 +31,27 @@ const Register = () => {
   };
 
   const handleSubmit = (e) => {
-    e.preventDefault()
-    if (!data?.name || !data?.email || !data?.password||! data?.type ) return alert("Please fill all fields");
-    else {
-      axios.post('http://localhost:8001/api/user/register', data)
-        .then((response) => {
-          if (response.data.success) {
-            message.success(response.data.message);
-            navigate('/login')
-
-          } else {
-            message.error(response.data.message)
-          }
-        })
-        .catch((error) => {
-          console.log("Error", error);
-        });
+    e.preventDefault();
+    if (!data.name || !data.email || !data.password || !data.type) {
+      alert("Please fill all fields");
+      return;
     }
-  };
 
+    // Use proxy route or make sure backend runs on port 8000
+    axios.post('/api/user/register', data)
+      .then((response) => {
+        if (response.data.success) {
+          message.success(response.data.message);
+          navigate('/login');
+        } else {
+          message.error(response.data.message || "Registration failed");
+        }
+      })
+      .catch((error) => {
+        console.error("Registration Error:", error);
+        message.error("Something went wrong. Please try again.");
+      });
+  };
 
   return (
     <>
@@ -56,23 +60,17 @@ const Register = () => {
           <Navbar.Brand><h2>RentEase</h2></Navbar.Brand>
           <Navbar.Toggle aria-controls="navbarScroll" />
           <Navbar.Collapse id="navbarScroll">
-            <Nav
-              className="me-auto my-2 my-lg-0"
-              style={{ maxHeight: '100px' }}
-              navbarScroll
-            >
-            </Nav>
+            <Nav className="me-auto my-2 my-lg-0" style={{ maxHeight: '100px' }} navbarScroll />
             <Nav>
               <Link to={'/'}>Home</Link>
               <Link to={'/login'}>Login</Link>
               <Link to={'/register'}>Register</Link>
             </Nav>
-
           </Navbar.Collapse>
         </Container>
       </Navbar>
 
-      <Container component="main" >
+      <Container component="main">
         <Box
           sx={{
             marginTop: 8,
@@ -109,47 +107,41 @@ const Register = () => {
               value={data.email}
               onChange={handleChange}
               autoComplete="email"
-              autoFocus
             />
             <TextField
               margin="normal"
               fullWidth
               name="password"
-              value={data.password}
-              onChange={handleChange}
               label="Password"
               type="password"
               id="password"
+              value={data.password}
+              onChange={handleChange}
               autoComplete="current-password"
             />
-            <InputLabel id="demo-simple-select-label">User Type</InputLabel>
+            <InputLabel id="select-user-type-label">User Type</InputLabel>
             <Select
-              labelId="demo-simple-select-label"
-              id="demo-simple-select"
-              name='type'
+              labelId="select-user-type-label"
+              id="select-user-type"
+              name="type"
               value={data.type}
-              label="type"
-              defaultValue="Select User"
               onChange={handleChange}
               style={{ width: '200px' }}
             >
-              <MenuItem value={'Select User'} disabled>Select User</MenuItem>
-              <MenuItem value={'Renter'}>Renter</MenuItem>
-              <MenuItem value={"Owner"}>Owner</MenuItem>
+              <MenuItem value="" disabled>Select User</MenuItem>
+              <MenuItem value="Renter">Renter</MenuItem>
+              <MenuItem value="Owner">Owner</MenuItem>
             </Select>
             <Box mt={2}>
-              <Button
-                type="submit"
-                variant="contained"
-                style={{ width: '200px' }}
-              >
+              <Button type="submit" variant="contained" style={{ width: '200px' }}>
                 Sign Up
               </Button>
             </Box>
             <Grid container>
-              <Grid item>Have an account?
-                <Link style={{ color: "blue" }} to={'/login'} variant="body2">
-                  {" Sign In"}
+              <Grid item>
+                Have an account?{" "}
+                <Link style={{ color: "blue" }} to="/login">
+                  Sign In
                 </Link>
               </Grid>
             </Grid>
@@ -157,7 +149,7 @@ const Register = () => {
         </Box>
       </Container>
     </>
-  )
-}
+  );
+};
 
-export default Register
+export default Register;
